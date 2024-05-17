@@ -59,5 +59,5 @@ def preprocess_input(batting_team, bowling_team, overs, runs, wickets, runs_in_p
     
     return np.array(input_array).reshape(1, -1)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)
