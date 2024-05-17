@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>First Innings Score Predictor</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='ipl-favicon.ico') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+        <script src="https://kit.fontawesome.com/5f3f547070.js" crossorigin="anonymous"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+        <script>
+            async function predictScore(event) {
+                event.preventDefault();
+
+                const formData = new FormData(event.target);
+                const data = {
+                    'batting-team': formData.get('batting-team'),
+                    'bowling-team': formData.get('bowling-team'),
+                    'overs': formData.get('overs'),
+                    'runs': formData.get('runs'),
+                    'wickets': formData.get('wickets'),
+                    'runs_in_prev_5': formData.get('runs_in_prev_5'),
+                    'wickets_in_prev_5': formData.get('wickets_in_prev_5')
+                };
+
+                try {
+                    const response = await fetch('{{ url_for('predict') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.error) {
+                        document.getElementById('prediction-result').innerText = result.error;
+                    } else {
+                        document.getElementById('prediction-result').innerText = `The final predicted score (range): ${result.lower_limit} to ${result.upper_limit}`;
+                    }
+                } catch (error) {
+                    document.getElementById('prediction-result').innerText = 'An error occurred while predicting the score.';
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+
+        <!-- Website Title -->
+        <div class="container">
+            <h2 class='container-heading'><span class='heading_first'>First Innings Score Predictor for </span><span class="heading_second">Indian Premier League (IPL)</span></h2>
+            <!-- <div class='description'>
+                <p>A Machine Learning Web App, Built with Flask, Deployed using Heroku.</p>
+            </div> -->
+        </div>
+
+        <!-- Prediction Area -->
+        <div class="prediction-area">
+
+            <!-- IPL Banner - 1 -->
+            <div class='ipl-banner-left'>
+                <div class="slider-frame">
+                    <div class="slide-images-up">
+                        <!-- Images -->
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='mi.jpg') }}" alt="Mumbai Indians"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='srh.png') }}" alt="Sunrisers Hyderabad"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='rcb.png') }}" alt="Royal Challengers Bangalore"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='dc.png') }}" alt="Delhi Capitals"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='rr.png') }}" alt="Rajasthan Royals"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='kkr.jpg') }}" alt="Kolkata Knight Riders"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='kxip.png') }}" alt="Kings XI Punjab"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='csk.png') }}" alt="Chennai Super Kings"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prediction Form -->
+            <div class='div2'>
+                <form id="predict-form" onsubmit="predictScore(event)">
+                    <!-- Batting Team Dropdown -->
+                    <select class="form-input align-center" name="batting-team">
+                        <option value="none">--- Select a Batting team ---</option>
+                        <option value="Mumbai Indians">Mumbai Indians</option>
+                        <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+                        <option value="Chennai Super Kings">Chennai Super Kings</option>
+                        <option value="Rajasthan Royals">Rajasthan Royals</option>
+                        <option value="Kings XI Punjab">Kings XI Punjab</option>
+                        <option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option>
+                        <option value="Delhi Daredevils">Delhi Daredevils</option>
+                        <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+                    </select><br>
+                    <select class="form-input align-center" id="batsman" name="batsman">
+                        <option value="none">--- Select a Batsman ---</option>
+                        <optgroup label="Top-Order Batsman">
+    
+                            <!-- ['SC Ganguly', 'BB McCullum', 'RT Ponting', 'DJ Hussey',
+                            'Mohammad Hafeez', 'PA Patel', 'ML Hayden', 'MEK Hussey',
+                            'MJ Guptill', 'JC Buttler', 'KH Pandya', 'KJ Abbott',
+                            'TM Head', 'KW Richardson', 'NS Naik', 'SW Billings',
+                            'AC Gilchrist', 'Sunny Singh', 'RG Sharma', 'A Symonds'] -->
+                            <option value="SC Ganguly">SC Ganguly</option>
+                            <option value="BB McCullum">BB McCullum</option>
+                            <option value="RT Ponting">RT Ponting</option>
+                            <option value="DJ Hussey">DJ Hussey</option>
+                            <option value="Mohammad Hafeez">Mohammad Hafeez</option>
+                            <option value="PA Patel">PA Patel</option>
+                            <option value="ML Hayden">ML Hayden</option>
+                            <option value="MEK Hussey">MEK Hussey</option>
+                            <option value="MJ Guptill">MJ Guptill</option>
+                            <option value="JC Buttler">JC Buttler</option>
+                            <option value="KH Pandya">KH Pandya</option>
+                            <option value="KJ Abbott">KJ Abbott</option>
+                            <option value="TM Head">TM Head</option>
+                            <option value="KW Richardson">KW Richardson</option>
+                            <option value="NS Naik">NS Naik</option>
+                            <option value="SW Billings">SW Billings</option>
+                            <option value="AC Gilchrist">AC Gilchrist</option>
+                            <option value="Sunny Singh">Sunny Singh</option>
+                            <option value="RG Sharma">RG Sharma</option>
+                            <option value="A Symonds">A Symonds</option>
+                        <optgroup label="Middle-Order Batsman">
+                            <!-- 'SK Raina', 'JDP Oram', 'S Badrinath', 'T Kohli',
+                            'YK Pathan', 'SR Watson', 'M Kaif', 'DS Lehmann', 'RA Jadeja',
+                            'M Rawat', 'D Salunkhe', 'SK Warne', 'SK Trivedi', 'BE Hendricks',
+                            'ST Jayasuriya', 'DJ Thornely', 'RV Uthappa', 'PR Shah',
+                            'AM Nayar' -->
+                            <option value="MS Dhoni">MS Dhoni</option>
+                            <option value="SK Raina">SK Raina</option>
+                            <option value="JDP Oram">JDP Oram</option>
+                            <option value="S Badrinath">S Badrinath</option>
+                            <option value="T Kohli">T Kohli</option>
+                            <option value="YK Pathan">YK Pathan</option>
+                            <option value="SR Watson">SR Watson</option>
+                            <option value="M Kaif">M Kaif</option>
+                            <option value="DS Lehmann">DS Lehmann</option>
+                            <option value="RA Jadeja">RA Jadeja</option>
+                            <option value="M Rawat">M Rawat</option>
+                            <option value="D Salunkhe">D Salunkhe</option>
+                            <option value="SK Warne">SK Warne</option>
+                            <option value="SK Trivedi">SK Trivedi</option>
+                            <option value="BE Hendricks">L Ronchi</option>
+                            <option value="ST Jayasuriya">ST Jayasuriya</option>
+                            <option value="DJ Thornely">DJ Thornely</option>
+                            <option value="RV Uthappa">RV Uthappa</option>
+                            <option value="PR Shah">PR Shah</option>
+                            <option value="AM Nayar">AM Nayar</option>
+                        </optgroup>
+                        <!-- ['Imran Tahir', 'MM Sharma', 'DJ Hooda', 'CH Morris', 'SS Iyer',
+                            'SA Abbott', 'AN Ahmed', 'YS Chahal', 'J Suchith', 'P Negi',
+                            'RG More', 'Anureet Singh', 'HH Pandya', 'NM Coulter-Nile',
+                            'PV Tambe', 'MJ McClenaghan', 'DJ Muthuswami', 'SN Thakur',
+                            'SN Khan','PJ Cummins'] -->
+                        <optgroup label="Lower-Order Batsman"></optgroup>
+                        <option value="Imran Tahir">Imran Tahir</option>
+                        <option value="MM Sharma">MM Sharma</option>
+                        <option value="DJ Hooda">DJ Hooda</option>
+                        <option value="CH Morris">CH Morris</option>
+                        <option value="SS Iyer">SS Iyer</option>
+                        <option value="SA Abbott">SA Abbott</option>
+                        <option value="AN Ahmed">AN Ahmed</option>
+                        <option value="YS Chahal">YS Chahal</option>
+                        <option value="J Suchith">J Suchith</option>
+                        <option value="P Negi">P Negi</option>
+                        <option value="RG More">RG More</option>
+                        <option value="Anureet Singh">Anureet Singh</option>
+                        <option value="HH Pandya">HH Pandya</option>
+                        <option value="NM Coulter-Nile">NM Coulter-Nile</option>
+                        <option value="PV Tambe">PV Tambe</option>
+                        <option value="MJ McClenaghan">MJ McClenaghan</option>
+                        <option value="DJ Muthuswami">DJ Muthuswami</option>
+                        <option value="SN Thakur">SN Thakur</option>
+                        <option value="SN Khan">SN Khan</option>
+                        <option value="PJ Cummins">PJ Cummins</option>
+                        </optgroup>
+                    </select><br>
+
+                    <!-- Bowling Team Dropdown -->
+                    <select class="form-input align-center" name="bowling-team">
+                        <option value="none">--- Select a Bowling team ---</option>
+                        <option value="Mumbai Indians">Mumbai Indians</option>
+                        <option value="Kolkata Knight Riders">Kolkata Knight Riders</option>
+                        <option value="Chennai Super Kings">Chennai Super Kings</option>
+                        <option value="Rajasthan Royals">Rajasthan Royals</option>
+                        <option value="Kings XI Punjab">Kings XI Punjab</option>
+                        <option value="Royal Challengers Bangalore">Royal Challengers Bangalore</option>
+                        <option value="Delhi Daredevils">Delhi Daredevils</option>
+                        <option value="Sunrisers Hyderabad">Sunrisers Hyderabad</option>
+                    </select><br>
+                    <select class="form-input align-center" id="bowler" name="bowler">
+                        <option value="none">--- Select a Bowler ---</option>
+                        <optgroup label="Seam-Bowler">
+                            <option value="P Kumar">P Kumar</option>
+                            <option value="Z Khan">Z Khan</option>
+                            <option value="AA Noffke">AA Noffke</option>
+                            <option value="JH Kallis">JH Kallis</option>
+                            <option value="SB Joshi">SB Joshi</option>
+                            <option value="CL White">CL White</option>
+                            <option value="B Lee">B Lee</option>
+                            <option value="S Sreesanth">S Sreesanth</option>
+                            <option value="JR Hopes">JR Hopes</option>
+                            <option value="IK Pathan">IK Pathan</option>
+                            <option value="Bipul Sharma">Bipul Sharma</option>
+                            <option value="DJ Bravo">DJ Bravo</option>
+                            <option value="S Ladda">S Ladda</option>
+                            <option value="UT Yadav">UT Yadav</option>
+                            <option value="MC Henriques">MC Henriques</option>
+                            <option value="R McLaren">R McLaren</option>
+                            <option value="J Theron">J Theron</option>
+                            <option value="S Narwal">S Narwal</option>
+                            <option value="Sohail Tanvir">Sohail Tanvir</option>
+                            <option value="RS Bopara">RS Bopara</option>
+                        </optgroup>
+                        <optgroup label="Spin-Bowler">
+                            <option value="Yuvraj Singh">Yuvraj Singh</option>
+                            <option value="YS Chahal">YS Chahal</option>
+                            <option value="Y Venugopal Rao">Y Venugopal Rao</option>
+                            <option value="A Mishra">A Mishra</option>
+                            <option value="SP Narine">SP Narine</option>
+                            <option value="Abdur Razzak">Abdur Razzak</option>
+                            <option value="RR Powar">RR Powar</option>
+                            <option value="M Ntini">M Ntini</option>
+                            <option value="GJ Maxwell">GJ Maxwell</option>
+                            <option value="BJ Hodge">BJ Hodge</option>
+                            <option value="YA Abdulla">YA Abdulla</option>
+                            <option value="PP Chawla">PP Chawla</option>
+                            <option value="RA Jadeja">RA Jadeja</option>
+                            <option value="M Muralitharan">M Muralitharan</option>
+                            <option value="TM Dilshan">TM Dilshan</option>
+                            <option value="VS Malik">VS Malik</option>
+                            <option value="D du Preez">D du Preez</option>
+                            <option value="RE van der Merwe">RE van der Merwe</option>
+                            <option value="DL Vettori">DL Vettori</option>
+                            <option value="R Ashwin">R Ashwin</option>
+                        </optgroup>
+                    </select><br>
+
+                    <input class="form-input" type="text" name="overs" placeholder="Overs (>= 5.0) eg. 7.2"><br>
+                    <input class="form-input" type="text" name="runs" placeholder="Runs eg. 64"><br>
+                    <input class="form-input" type="text" name="wickets" placeholder="Wickets eg. 4"><br>
+                    <input class="form-input" type="text" name="runs_in_prev_5" placeholder="Runs scored in previous 5 Overs eg. 42"><br>
+                    <input class="form-input" type="text" name="wickets_in_prev_5" placeholder="Wickets taken in previous 5 Overs eg. 3"><br>
+                    <input type="submit" class="myButton" value="Predict Score" style="margin-bottom: 20px;">
+                </form>
+                <div id="prediction-result" class="form-input align-center"></div>
+            </div>
+
+            <!-- IPL Banner - 2 -->
+            <div class='ipl-banner-right'>
+                <div class="slider-frame">
+                    <div class="slide-images-down">
+                        <!-- Images -->
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='mi.jpg') }}" alt="Mumbai Indians"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='srh.png') }}" alt="Sunrisers Hyderabad"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='rcb.png') }}" alt="Royal Challengers Bangalore"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='dc.png') }}" alt="Delhi Capitals"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='kkr.jpg') }}" alt="Kolkata Knight Riders"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='rr.png') }}" alt="Rajasthan Royals"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='kxip.png') }}" alt="Kings XI Punjab"></div>
+                        <div class="image-container"><img class="image-width" src="{{ url_for('static', filename='csk.png') }}" alt="Chennai Super Kings"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
